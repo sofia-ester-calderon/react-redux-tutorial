@@ -43,6 +43,7 @@ export function ManageAuthorPage({
     }
     createAuthor(author)
       .then(() => {
+        setFormTouched(false);
         toast.success("Author created");
         history.push("/authors");
       })
