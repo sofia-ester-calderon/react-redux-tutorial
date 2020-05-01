@@ -8,6 +8,9 @@ import { loadCourses } from "../../redux/actions/courseActions";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 
+export const SORT_ASC = "SORT_ASC";
+export const SORT_DESC = "SORT_DESC";
+
 export function AuthorsPage({
   authors,
   loadAuthors,
@@ -16,17 +19,46 @@ export function AuthorsPage({
   loadCourses,
   deleteAuthor,
 }) {
-  const [filteredAuthors, setFilteredAuthors] = useState(authors);
+  const [sortOrder, setSortedOrder] = useState(SORT_DESC);
+  const [filteredAuthors, setFilteredAuthors] = useState(
+    Object.assign(authors).sort(compare)
+  );
   useEffect(() => {
     if (authors.length === 0) {
       loadAuthors().catch((error) => alert("error loadig authors " + error));
     } else if (filteredAuthors.length === 0) {
-      setFilteredAuthors(Object.assign(authors));
+      setFilteredAuthors(Object.assign(authors).sort(compare));
     }
     if (courses.length === 0) {
       loadCourses().catch((error) => alert("error loadig courses " + error));
     }
   }, [authors, courses]);
+
+  function compare(a, b) {
+    const nameA = a.name.toUpperCase();
+    const nameB = b.name.toUpperCase();
+
+    let comparison = 0;
+
+    if (sortOrder === SORT_DESC) {
+      comparison = nameA > nameB ? 1 : nameA < nameB ? -1 : 0;
+    }
+    if (sortOrder === SORT_ASC) {
+      comparison = nameB > nameA ? 1 : nameB < nameA ? -1 : 0;
+    }
+    return comparison;
+  }
+
+  function handleSort() {
+    if (sortOrder === SORT_DESC) {
+      setSortedOrder(SORT_ASC);
+    }
+    if (sortOrder === SORT_ASC) {
+      setSortedOrder(SORT_DESC);
+    }
+    const sortedAuthors = Object.assign(filteredAuthors);
+    setFilteredAuthors(sortedAuthors.sort(compare));
+  }
 
   function handleDelete(event) {
     const authorCourses = courses.filter((course) => {
@@ -65,6 +97,8 @@ export function AuthorsPage({
             authors={filteredAuthors}
             onDelete={handleDelete}
             onFilter={handleFilter}
+            sortOrder={sortOrder}
+            onSort={handleSort}
           />
           <Link className="btn btn-primary" to={"/author"}>
             Add Author

@@ -2,12 +2,15 @@ import React from "react";
 import { shallow } from "enzyme";
 import { authors } from "../../../tools/mockData";
 import AuthorList from "./AuthorList";
+import { SORT_DESC } from "./AuthorsPage";
 
 function renderCourseList(args) {
   const defaultProps = {
     authors,
+    sortOrder: SORT_DESC,
     onDelete: jest.fn(),
     onFilter: jest.fn(),
+    onSort: jest.fn(),
   };
 
   const props = { ...defaultProps, ...args };

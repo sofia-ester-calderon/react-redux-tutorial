@@ -1,5 +1,5 @@
 import React from "react";
-import { AuthorsPage } from "./AuthorsPage";
+import { AuthorsPage, SORT_DESC } from "./AuthorsPage";
 import { authors, courses } from "../../../tools/mockData";
 import { Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
@@ -89,4 +89,41 @@ it("should show only authors that meet the criteria in filter-input - case insen
   const rows = tableBody.find("tr");
 
   expect(rows.getElements().length).toEqual(2);
+});
+
+it("should sort authors in alphabetical order desc when initially loading page", () => {
+  const _authors = [
+    { id: 1, name: "C" },
+    { id: 2, name: "D" },
+    { id: 3, name: "A" },
+    { id: 4, name: "B" },
+  ];
+
+  const wrapper = renderAuthorsPage({ authors: _authors });
+
+  const tableBody = wrapper.find("tbody");
+  const authorNames = tableBody.find(".author-name");
+
+  expect(authorNames.first().text()).toEqual("A");
+  expect(authorNames.last().text()).toEqual("D");
+});
+
+it("should sort authors in alphabetical order asc when sort btn is clicked", () => {
+  const _authors = [
+    { id: 1, name: "C" },
+    { id: 2, name: "D" },
+    { id: 3, name: "A" },
+    { id: 4, name: "B" },
+  ];
+
+  const wrapper = renderAuthorsPage({ authors: _authors });
+
+  const imgBtn = wrapper.find("img");
+  imgBtn.simulate("click", { button: 0 });
+
+  const tableBody = wrapper.find("tbody");
+  const authorNames = tableBody.find(".author-name");
+
+  expect(authorNames.first().text()).toEqual("D");
+  expect(authorNames.last().text()).toEqual("A");
 });
